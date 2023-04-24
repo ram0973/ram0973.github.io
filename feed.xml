@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+    <title>IT Thoughts</title>
+    <link href="https://ram0973.github.io/feed.xml" rel="self" />
+    <link href="https://ram0973.github.io" />
+    <updated>2023-04-24T11:20:47+03:00</updated>
+    <author>
+        <name>ram0973</name>
+    </author>
+    <id>https://ram0973.github.io</id>
+
+    <entry>
+        <title>IPSEC IKEV2 VPN on Cisco ASA 5520</title>
+        <author>
+            <name>ram0973</name>
+        </author>
+        <link href="https://ram0973.github.io/ipsec-ikev2-vpn-on-cisco-asa-5520/"/>
+        <id>https://ram0973.github.io/ipsec-ikev2-vpn-on-cisco-asa-5520/</id>
+        <media:content url="https://ram0973.github.io/media/posts/1/asa.jpg" medium="image" />
+            <category term="cisco"/>
+
+        <updated>2023-04-24T11:20:47+03:00</updated>
+            <summary>
+                <![CDATA[
+                        <img src="https://ram0973.github.io/media/posts/1/asa.jpg" alt="" />
+                    ; Сброс настроек - ; write erase на ASA 5520 ; packet-tracer ; packet-tracer input LAN icmp 10.16.100.2 8 0 10.16.200.2 ; packet-tracer input LAN tcp 10.16.100.2 12345 8.8.8.8 80 ; тут 10.16.100.1 - сама АСА - почему-то дропается ASA 1 ======================== hostname asa1 terminal&hellip;
+                ]]>
+            </summary>
+        <content type="html">
+            <![CDATA[
+                    <p><img src="https://ram0973.github.io/media/posts/1/asa.jpg" class="type:primaryImage" alt="" /></p>
+                
+  <p>
+    ; Сброс настроек -
+<br>; write erase на ASA 5520
+<br>
+<br>; packet-tracer
+<br>; packet-tracer input LAN icmp 10.16.100.2 8 0 10.16.200.2
+<br>; packet-tracer input LAN tcp 10.16.100.2 12345 8.8.8.8 80
+<br>; тут 10.16.100.1 - сама АСА - почему-то дропается
+<br>
+<br>ASA 1
+<br>========================
+<br>
+<br><code>hostname asa1
+<br>terminal width 160
+<br>domain-name yabbarov.ru
+<br>clock timezone utc 3
+<br>!
+<br>interface Ethernet 0
+<br>nameif WAN
+<br>security-level 0
+<br>ip address 192.168.0.1 255.255.255.0
+<br>no shutdown
+<br>exit
+<br>!
+<br>interface Ethernet 1
+<br>nameif LAN
+<br>security-level 100
+<br>ip address 10.16.100.1 255.255.255.0
+<br>no shutdown
+<br>exit
+<br>!
+<br>;interface Ethernet 2
+<br>; nameif DMZ
+<br>; security-level 50
+<br>; ip address 192.168.20.1 255.255.255.0
+<br>;exit
+<br>!
+<br>; Default route
+<br>route WAN 0.0.0.0 0.0.0.0 192.168.0.2 1
+<br>!
+<br>; dhcpd dns 8.8.8.8
+<br>!
+<br>; NAT for LAN
+<br>object network lan-subnet
+<br>subnet 10.16.100.0 255.255.255.0
+<br>nat (LAN,WAN) dynamic interface
+<br>exit
+<br>
+<br>; remote LAN
+<br>object network remote-lan-subnet
+<br>subnet 10.16.200.0 255.255.255.0
+<br>exit
+<br>
+<br>; NAT exemption
+<br>nat (LAN,WAN) source static lan-subnet lan-subnet destination static remote-lan-subnet remote-lan-subnet no-proxy-arp route-lookup
+<br>
+<br>; IKEV2 IPSEC TUNNEL SETTINGS
+<br>
+<br>crypto ikev2 enable WAN
+<br>
+<br>crypto ikev2 policy 20
+<br>encryption aes-256
+<br>integrity sha256
+<br>group 5
+<br>prf sha
+<br>lifetime seconds 3600
+<br>exit
+<br>!
+<br>tunnel-group 192.168.0.2 type ipsec-l2l
+<br>tunnel-group 192.168.0.2 ipsec-attributes
+<br>ikev2 remote-authentication pre-shared-key Cisco
+<br>ikev2 local-authentication pre-shared-key Cisco
+<br>
+<br>crypto ipsec ikev2 ipsec-proposal VPN-PROPOSAL
+<br>protocol esp encryption aes-256
+<br>protocol esp integrity sha-1
+<br>exit
+<br>!
+<br>access-list ASA-TO-ASA extended permit ip object lan-subnet object remote-lan-subnet
+<br>
+<br>crypto map VPN-MAP 1 match address ASA-TO-ASA
+<br>crypto map VPN-MAP 1 set peer 192.168.0.2
+<br>crypto map VPN-MAP 1 set ikev2 ipsec-proposal VPN-PROPOSAL
+<br>crypto map VPN-MAP 1 set security-association lifetime seconds 3600
+<br>crypto map VPN-MAP interface WAN
+<br>
+<br>; enable ping flow
+<br>fixup protocol icmp
+<br>
+<br>write</code>
+<br>
+<br>ASA 2
+<br>=================
+<br>
+<br><code>hostname asa2
+<br>terminal width 160
+<br>domain-name yabbarov.ru
+<br>clock timezone utc 3
+<br>
+<br>interface Ethernet 0
+<br>nameif WAN
+<br>security-level 0
+<br>ip address 192.168.0.2 255.255.255.0
+<br>no shutdown
+<br>exit
+<br>!
+<br>interface Ethernet 1
+<br>nameif LAN
+<br>security-level 100
+<br>ip address 10.16.200.1 255.255.255.0
+<br>no shutdown
+<br>exit
+<br>!
+<br>;interface Ethernet 2
+<br>; nameif DMZ
+<br>; security-level 50
+<br>; ip address 192.168.20.1 255.255.255.0
+<br>;exit
+<br>!
+<br># маршрут по умолчанию
+<br>route WAN 0.0.0.0 0.0.0.0 192.168.0.1 1
+<br>; dhcpd dns 8.8.8.8
+<br>
+<br>; NAT for LAN
+<br>object network lan-subnet
+<br>subnet 10.16.200.0 255.255.255.0
+<br>nat (LAN,WAN) dynamic interface
+<br>exit
+<br>
+<br>; remote LAN
+<br>object network remote-lan-subnet
+<br>subnet 10.16.100.0 255.255.255.0
+<br>exit
+<br>
+<br>; NAT exemption
+<br>nat (LAN,WAN) source static lan-subnet lan-subnet destination static remote-lan-subnet remote-lan-subnet
+<br>
+<br>; IKEV2 IPSEC TUNNEL SETTINGS
+<br>
+<br>crypto ikev2 enable WAN
+<br>
+<br>crypto ikev2 policy 20
+<br>encryption aes-256
+<br>integrity sha256
+<br>group 5
+<br>prf sha
+<br>lifetime seconds 3600
+<br>exit
+<br>!
+<br>tunnel-group 192.168.0.1 type ipsec-l2l
+<br>tunnel-group 192.168.0.1 ipsec-attributes
+<br>ikev2 remote-authentication pre-shared-key Cisco
+<br>ikev2 local-authentication pre-shared-key Cisco
+<br>
+<br>crypto ipsec ikev2 ipsec-proposal VPN-PROPOSAL
+<br>protocol esp encryption aes-256
+<br>protocol esp integrity sha-1
+<br>exit
+<br>!
+<br>access-list ASA-TO-ASA extended permit ip object lan-subnet object remote-lan-subnet
+<br>!
+<br>crypto map VPN-MAP 1 match address ASA-TO-ASA
+<br>crypto map VPN-MAP 1 set peer 192.168.0.1
+<br>crypto map VPN-MAP 1 set ikev2 ipsec-proposal VPN-PROPOSAL
+<br>crypto map VPN-MAP 1 set security-association lifetime seconds 3600
+<br>crypto map VPN-MAP interface WAN
+<br>
+<br>; enable ping flow
+<br>fixup protocol icmp
+<br>
+<br>write</code>
+<br>
+<br>
+<br>CISCO 3725
+<br>=============
+<br>
+<br>hostname 3725
+<br>
+<br>; Не вылезает всякая фигня в консоли
+<br>; Отключаем исходящие Telnet соединения с маршрутизатора, они являются причиной поиска по именам доменов
+<br>ip domain lookup
+<br>line con 0
+<br>transport output none
+<br>exit
+<br>
+<br>
+<br>interface FastEthernet0/0
+<br>ip address 6.6.6.6 255.255.255.0
+<br>exit
+<br>interface FastEthernet0/1
+<br>ip address 7.7.7.7 255.255.255.0
+<br>exit
+<br>
+<br>============
+<br>; Отобразить все ISAKMP и IPSEC туннели
+<br>show vpn-sessiondb
+<br>
+<br>; Отобразить сессии
+<br>show vpn-sessiondb l2l
+<br>
+<br>; Как завершить (зависшую?) сессию -
+<br>; смотрим индекс предыдущей командой
+<br>; например индекс нужной сессии 2
+<br>; И завершаем сессию
+<br>vpn-sessiondb logoff index 2
+<br>
+<br>
+<br>This article was updated on April 24, 2023
+<br>
+<br>cisco
+<br>ram0973
+<br>POWERED BY PUBLII
+  </p>
+            ]]>
+        </content>
+    </entry>
+</feed>
