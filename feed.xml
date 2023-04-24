@@ -3,7 +3,7 @@
     <title>IT Thoughts</title>
     <link href="https://yabbarov.ru/feed.xml" rel="self" />
     <link href="https://yabbarov.ru" />
-    <updated>2023-04-24T13:45:24+03:00</updated>
+    <updated>2023-04-24T15:51:30+03:00</updated>
     <author>
         <name>ram0973</name>
     </author>
@@ -19,11 +19,15 @@
         <media:content url="https://yabbarov.ru/media/posts/1/asa.jpg" medium="image" />
             <category term="cisco"/>
 
-        <updated>2023-04-24T13:45:24+03:00</updated>
+        <updated>2023-04-24T15:51:30+03:00</updated>
             <summary>
                 <![CDATA[
                         <img src="https://yabbarov.ru/media/posts/1/asa.jpg" alt="" />
-                    ; Сброс настроек - ; write erase на ASA 5520 ; packet-tracer ; packet-tracer input LAN icmp 10.16.100.2 8 0 10.16.200.2 ; packet-tracer input LAN tcp 10.16.100.2 12345 8.8.8.8 80 ; тут 10.16.100.1 - сама АСА - почему-то дропается ASA 1 ======================== hostname asa1 terminal&hellip;
+                    
+  <p>
+    We going to make a home lab on IPSec IKEv2 VPN on two Cisco ASA
+  </p>
+
                 ]]>
             </summary>
         <content type="html">
@@ -31,18 +35,25 @@
                     <p><img src="https://yabbarov.ru/media/posts/1/asa.jpg" class="type:primaryImage" alt="" /></p>
                 
   <p>
-    ; Сброс настроек -
-<br>; write erase на ASA 5520
-<br>
-<br>; packet-tracer
-<br>; packet-tracer input LAN icmp 10.16.100.2 8 0 10.16.200.2
-<br>; packet-tracer input LAN tcp 10.16.100.2 12345 8.8.8.8 80
-<br>; тут 10.16.100.1 - сама АСА - почему-то дропается
-<br>
-<br>ASA 1
-<br>========================
-<br>
-<br><code>hostname asa1
+    We going to make a home lab on IPSec IKEv2 VPN on two Cisco ASA
+  </p>
+
+
+    <h2 id="reset-asa-settings">
+      Reset ASA settings
+    </h2>
+
+  <p>
+    <code>write erase</code><br>
+
+  </p>
+
+    <h2 id="first-asa-settings">
+      First ASA settings
+    </h2>
+
+    <blockquote class="blockquote">
+      hostname asa1
 <br>terminal width 160
 <br>domain-name yabbarov.ru
 <br>clock timezone utc 3
@@ -119,12 +130,17 @@
 <br>; enable ping flow
 <br>fixup protocol icmp
 <br>
-<br>write</code>
+<br>write
 <br>
-<br>ASA 2
-<br>=================
-<br>
-<br><code>hostname asa2
+
+    </blockquote>
+
+    <h2 id="second-asa-settings">
+      Second ASA settings
+    </h2>
+
+    <blockquote class="blockquote">
+      hostname asa2
 <br>terminal width 160
 <br>domain-name yabbarov.ru
 <br>clock timezone utc 3
@@ -200,13 +216,29 @@
 <br>; enable ping flow
 <br>fixup protocol icmp
 <br>
-<br>write</code>
+<br>write
 <br>
+
+    </blockquote>
+
+  <p>
+    
+=============<br>CISCO 3725
 <br>
-<br>CISCO 3725
-<br>=============
+  </p>
+
+  <p>
+    =============
 <br>
-<br>hostname 3725
+
+  </p>
+
+  <p>
+    
+  </p>
+
+  <p>
+    hostname 3725
 <br>
 <br>; Не вылезает всякая фигня в консоли
 <br>; Отключаем исходящие Telnet соединения с маршрутизатора, они являются причиной поиска по именам доменов
@@ -224,24 +256,41 @@
 <br>exit
 <br>
 <br>============
-<br>; Отобразить все ISAKMP и IPSEC туннели
-<br>show vpn-sessiondb
-<br>
-<br>; Отобразить сессии
-<br>show vpn-sessiondb l2l
-<br>
-<br>; Как завершить (зависшую?) сессию -
-<br>; смотрим индекс предыдущей командой
-<br>; например индекс нужной сессии 2
-<br>; И завершаем сессию
-<br>vpn-sessiondb logoff index 2
-<br>
-<br>
-<br>This article was updated on April 24, 2023
-<br>
-<br>cisco
-<br>ram0973
-<br>POWERED BY PUBLII
+  </p>
+
+    <h2 id="troubleshooting-vpn">
+      Troubleshooting VPN
+    </h2>
+
+    <h6 id="show-all-isakmp-and-ipsec-tunnelslessbrgreater">
+      Show all ISAKMP and IPSEC tunnels<br>
+    </h6>
+
+  <p>
+    <code>show vpn-sessiondb</code><br>
+  </p>
+
+    <h6 id="show-l2l-sessions">
+      Show L2L sessions
+    </h6>
+
+  <p>
+    <code>show vpn-sessiondb l2l</code><br>
+  </p>
+
+    <h6 id="how-to-end-frozen-session">
+      How to end (frozen ?) session
+    </h6>
+
+  <p>
+    ; Как завершить (зависшую?) сессию -<br><br>; смотрим индекс предыдущей командой<br><br>; например индекс нужной сессии 1<br>; И завершаем сессию<br><br>vpn-sessiondb logoff index 1
+  </p>
+
+  <p>
+    ; packet-tracer
+<br>; packet-tracer input LAN icmp 10.16.100.2 8 0 10.16.200.2
+<br>; packet-tracer input LAN tcp 10.16.100.2 12345 8.8.8.8 80
+<br>; тут 10.16.100.1 - сама АСА - почему-то дропается
   </p>
             ]]>
         </content>
